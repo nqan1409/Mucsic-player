@@ -1,5 +1,5 @@
 /*
-    1. Render song
+    1. Render song 🌟
     2. Scroll top
     3. Play / pause / seek
     4. CD rotate
@@ -14,8 +14,10 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const playList = $('.playlist');
+
 const app = {
-    song: [
+    songs: [
         {
             name: 'Cưới thôi',
             singer: 'Bray ft TAP',
@@ -64,5 +66,29 @@ const app = {
             path: './assets/music/song8.mp3',
             image: './assets/img/song8.jpg'
         }
-    ]
+    ],
+    render: function() {
+        const htmls = this.songs.map(song => {
+            return `
+                <div class="song">
+                    <div class="thumb"
+                        style="background-image: url('${song.image}')">
+                    </div>
+                    <div class="body">
+                        <h3 class="title">${song.name}</h3>
+                        <p class="author">${song.singer}</p>
+                    </div>
+                    <div class="option">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+            `
+        });
+        playList.innerHTML = htmls.join('\n');
+    },
+    start: function() {
+        this.render();
+    }
 }
+
+app.start();
