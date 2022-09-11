@@ -1,6 +1,6 @@
 /*
     1. Render song 🌟
-    2. Scroll top
+    2. Scroll top 🌟
     3. Play / pause / seek
     4. CD rotate
     5. Next / prev song
@@ -15,6 +15,7 @@ const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
 const playList = $('.playlist');
+const cdElement = $('.cd');
 
 const app = {
     songs: [
@@ -86,7 +87,19 @@ const app = {
         });
         playList.innerHTML = htmls.join('\n');
     },
+    handleEven: function() {
+        const cdWidth = cdElement.offsetWidth;
+        document.onscroll = function() {
+            const scrolTop = window.scrollY | document.documentElement.scrollTop;
+            const newCDWidth = cdWidth - scrolTop;
+            
+            cdElement.style.width = newCDWidth > 0 ? newCDWidth + 'px' : 0;
+            cdElement.style.opacity = newCDWidth / cdWidth;
+        };
+    },
     start: function() {
+        this.handleEven();
+
         this.render();
     }
 }
