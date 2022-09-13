@@ -3,7 +3,7 @@
     2. Scroll top 🌟
     3. Play / pause / seek 🌟
     4. CD rotate 🌟
-    5. Next / prev song
+    5. Next / prev song 🌟
     6. Random
     7. Next / repeat when ended
     8. Active song
@@ -22,6 +22,8 @@ const audio = $('#audio');
 const playBtn = $('.btn-toggle-play');
 const player = $('.player');
 const progress = $('#progress');
+const nextBtn = $('.btn-next');
+const prevBtn = $('.btn-prev');
 
 const app = {
     currentIndex: 0,
@@ -160,11 +162,36 @@ const app = {
             const seekTime = audio.duration * (this.value / 100);
             audio.currentTime = seekTime;
         }
+
+        // Xử lý khi netx bài hát
+        nextBtn.onclick = function() {
+            _this.netxSong();
+            audio.play();
+        }
+        // Xử lý khi prev bài hát
+        prevBtn.onclick = function() {
+            _this.prevSong();
+            audio.play();
+        }
     },
     loadCurrentSong: function() {
         header.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url("${this.currentSong.image}")`;
         audio.src = this.currentSong.path;
+    },
+    netxSong: function() {
+        this.currentIndex++;
+        if (this.currentIndex >= this.songs.length) {
+            this.currentIndex = 0;
+        }
+        this.loadCurrentSong();
+    },
+    prevSong: function() {
+        this.currentIndex--;
+        if (this.currentIndex < 0) {
+            this.currentIndex = this.songs.length - 1;
+        }
+        this.loadCurrentSong();
     },
     start: function() {
         // Định nghĩa các thuộc tính cho object
