@@ -7,8 +7,8 @@
     6. Random 🌟
     7. Next / repeat when ended 🌟
     8. Active song 🌟
-    9. Scroll active song into view
-    Play song when click
+    9. Scroll active song into view 🌟
+    10. Play song when click
 */
 
 const $ = document.querySelector.bind(document);
@@ -180,6 +180,7 @@ const app = {
                 audio.play();
             }
             _this.render();
+            _this.srcollToActiveSong();
         }
         // Xử lý khi prev bài hát
         prevBtn.onclick = function () {
@@ -192,6 +193,7 @@ const app = {
                 audio.play();
             }
             _this.render();
+            _this.srcollToActiveSong();
         }
 
         // Xử lý khi random bài hát
@@ -261,6 +263,14 @@ const app = {
                 arr[index] = false;
             })
         }
+    },
+    srcollToActiveSong: function() {
+        setTimeout(() => {
+            $('.song.active').scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }, 200);
     },
     start: function () {
         // Định nghĩa các thuộc tính cho object
