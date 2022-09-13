@@ -5,7 +5,7 @@
     4. CD rotate 🌟
     5. Next / prev song 🌟
     6. Random 🌟
-    7. Next / repeat when ended
+    7. Next / repeat when ended 🌟
     8. Active song
     9. Scroll active song into view
     Play song when click
@@ -25,11 +25,15 @@ const progress = $('#progress');
 const nextBtn = $('.btn-next');
 const prevBtn = $('.btn-prev');
 const randomBtn = $('.btn-random');
+const repeatBtn = $('.btn-repeat');
+console.log([repeatBtn]);
 
 const app = {
     currentIndex: 0,
     isPlaying: false,
     isRandom: false,
+    isRepeat: false,
+    arrayPlayed: [false, false, false, false, false, false, false, false],
     songs: [
         {
             name: 'Cưới thôi',
@@ -140,13 +144,13 @@ const app = {
             // Khi bài hát play
             audio.onplay = function () {
                 _this.isPlaying = !_this.isPlaying;
-                player.classList.add('playing');
+                player.classList.toggle('playing', _this.isPlaying);
                 cdThumbAnimate.play();
             }
             // Khi bài hát pause
             audio.onpause = function () {
                 _this.isPlaying = !_this.isPlaying;
-                player.classList.remove('playing');
+                player.classList.toggle('playing', _this.isPlaying);
                 cdThumbAnimate.pause();
             }
         };
@@ -194,6 +198,23 @@ const app = {
             // Nếu _this.isRandom = true thì sẽ thêm class="active" và ngược lại
             this.classList.toggle('active', _this.isRandom);
         }
+
+        // Xử lý lập lại 1 bài hát
+        repeatBtn.onclick = function () {
+            _this.isRepeat = !_this.isRepeat;
+            // Nếu _this.isRepeat = true thì sẽ thêm class="active" và ngược lại
+            this.classList.toggle('active', _this.isRepeat);
+        }
+
+        // Xử lý next / previous khi ended bài hát
+        audio.onended = function () {
+            if (_this.isRepeat) {
+                audio.play();
+            }
+            else {
+                nextBtn.click();
+            }
+        }
     },
     loadCurrentSong: function () {
         header.textContent = this.currentSong.name;
@@ -216,11 +237,22 @@ const app = {
     },
     playRandomSong: function () {
         let newIndex;
+        this.arrayPlayed[this.currentIndex] = true;
         do {
+            this.handleArrPlayed();
             newIndex = Math.floor(Math.random() * this.songs.length);
-        } while (newIndex === this.currentIndex);
+        } while (this.arrayPlayed[newIndex]);
         this.currentIndex = newIndex;
         this.loadCurrentSong();
+    },
+    handleArrPlayed: function() {
+        let isFull = false;
+        isFull = this.arrayPlayed.every(song => song === true);
+        if (isFull) {
+            this.arrayPlayed.forEach(function(song, index, arr) {
+                arr[index] = false;
+            })
+        }
     },
     start: function () {
         // Định nghĩa các thuộc tính cho object
