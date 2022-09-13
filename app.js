@@ -6,7 +6,7 @@
     5. Next / prev song 🌟
     6. Random 🌟
     7. Next / repeat when ended 🌟
-    8. Active song
+    8. Active song 🌟
     9. Scroll active song into view
     Play song when click
 */
@@ -92,9 +92,9 @@ const app = {
         });
     },
     render: function () {
-        const htmls = this.songs.map(song => {
+        const htmls = this.songs.map((song, index) => {
             return `
-                <div class="song">
+                <div class="song ${this.currentIndex === index ? 'active' : ''}">
                     <div class="thumb"
                         style="background-image: url('${song.image}')">
                     </div>
@@ -179,6 +179,7 @@ const app = {
                 _this.netxSong();
                 audio.play();
             }
+            _this.render();
         }
         // Xử lý khi prev bài hát
         prevBtn.onclick = function () {
@@ -190,6 +191,7 @@ const app = {
                 _this.prevSong();
                 audio.play();
             }
+            _this.render();
         }
 
         // Xử lý khi random bài hát
@@ -239,6 +241,8 @@ const app = {
         let newIndex;
         this.arrayPlayed[this.currentIndex] = true;
         do {
+            // Tối ưu phát ngẫu nhiên
+            // Không phát lại bài đã phát trước đó khi random mode on
             this.handleArrPlayed();
             newIndex = Math.floor(Math.random() * this.songs.length);
         } while (this.arrayPlayed[newIndex]);
@@ -247,6 +251,10 @@ const app = {
     },
     handleArrPlayed: function() {
         let isFull = false;
+        // Ban đầu mảng this.arrayPlayed được đánh dấu tất cả là false
+        // Sau khi đã phát bài đó ở random mode thì sẽ đáng dấu bài đó là true
+        // Kiểm tra xem toàn bộ mảng đã là true hết hay chưa
+        // Nếu rồi thì sẽ reset lại toàn bộ là false và tiếp tục vòng lập
         isFull = this.arrayPlayed.every(song => song === true);
         if (isFull) {
             this.arrayPlayed.forEach(function(song, index, arr) {
