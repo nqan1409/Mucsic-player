@@ -2,7 +2,7 @@
     1. Render song 🌟
     2. Scroll top 🌟
     3. Play / pause / seek 🌟
-    4. CD rotate
+    4. CD rotate 🌟
     5. Next / prev song
     6. Random
     7. Next / repeat when ended
@@ -106,6 +106,16 @@ const app = {
         _this = this;
         // Xử lý scroll play list
         const cdWidth = cdElement.offsetWidth;
+
+        // Xử lý quay / dừng CD ( CD rotate )
+        const cdThumbAnimate = cdThumb.animate([
+            { transform: 'rotate(360deg)'}
+        ], {
+            duration: 10000,
+            iterations: Infinity
+        })
+        cdThumbAnimate.pause();
+
         document.onscroll = function() {
             const scrolTop = window.scrollY | document.documentElement.scrollTop;
             const newCDWidth = cdWidth - scrolTop;
@@ -122,15 +132,18 @@ const app = {
             else {
                 audio.play();           
             };
+
             // Khi bài hát play
             audio.onplay = function() {
                 _this.isPlaying = true;
-                player.classList.add('playing') 
+                player.classList.add('playing');
+                cdThumbAnimate.play();
             }
             // Khi bài hát pause
             audio.onpause = function() {
                 _this.isPlaying = false;
-                player.classList.remove('playing')  
+                player.classList.remove('playing');  
+                cdThumbAnimate.pause();
             }
         };
 
