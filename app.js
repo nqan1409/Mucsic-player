@@ -8,7 +8,8 @@
     7. Next / repeat when ended 🌟
     8. Active song 🌟
     9. Scroll active song into view 🌟
-    10. Play song when click
+    10. Play song when click 🌟
+    11. Save option
 */
 
 const $ = document.querySelector.bind(document);
@@ -26,7 +27,6 @@ const nextBtn = $('.btn-next');
 const prevBtn = $('.btn-prev');
 const randomBtn = $('.btn-random');
 const repeatBtn = $('.btn-repeat');
-console.log([repeatBtn]);
 
 const app = {
     currentIndex: 0,
@@ -84,7 +84,7 @@ const app = {
             image: './assets/img/song8.jpg'
         }
     ],
-    defineProoerties: function () {
+    defineProperties: function () {
         Object.defineProperty(this, 'currentSong', {
             get: function () {
                 return this.songs[this.currentIndex];
@@ -94,7 +94,7 @@ const app = {
     render: function () {
         const htmls = this.songs.map((song, index) => {
             return `
-                <div class="song ${this.currentIndex === index ? 'active' : ''}">
+                <div class="song ${this.currentIndex === index ? 'active' : ''}" data-index="${index}">
                     <div class="thumb"
                         style="background-image: url('${song.image}')">
                     </div>
@@ -144,13 +144,13 @@ const app = {
             // Khi bài hát play
             audio.onplay = function () {
                 _this.isPlaying = !_this.isPlaying;
-                player.classList.toggle('playing', _this.isPlaying);
+                player.classList.add('playing');
                 cdThumbAnimate.play();
             }
             // Khi bài hát pause
             audio.onpause = function () {
                 _this.isPlaying = !_this.isPlaying;
-                player.classList.toggle('playing', _this.isPlaying);
+                player.classList.remove('playing');
                 cdThumbAnimate.pause();
             }
         };
@@ -219,6 +219,28 @@ const app = {
                 nextBtn.click();
             }
         }
+
+        // Lắng nghe sự kiện click vào playlist
+        playList.onclick = function (e) {
+            const songElement = e.target.closest('.song:not(.active)');
+            const optionElement = e.target.closest('.option');
+            if (songElement || optionElement) {
+                // Xử lý khi click vào song
+                if (songElement) {
+                    // console.log(songElement.getAttribute('data-index'));
+                    // console.log(songElement.dataset.index);
+                    _this.currentIndex = Number(songElement.dataset.index);
+                    _this.loadCurrentSong();
+                    _this.render();
+                    audio.play();
+                }
+
+                // Xử lý khi click vào option
+                if (optionElement) {
+
+                }
+            }
+        }
     },
     loadCurrentSong: function () {
         header.textContent = this.currentSong.name;
@@ -274,7 +296,7 @@ const app = {
     },
     start: function () {
         // Định nghĩa các thuộc tính cho object
-        this.defineProoerties();
+        this.defineProperties();
         // Lắng nghe / xử lý các sự kiện (DOM event handler)
         this.handleEven();
         // Tải thông tin bài hát đầu tiên bào UI khi chạy ứng dụng
