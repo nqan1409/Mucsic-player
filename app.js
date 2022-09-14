@@ -9,11 +9,13 @@
     8. Active song 🌟
     9. Scroll active song into view 🌟
     10. Play song when click 🌟
-    11. Save option
+    11. Save option 🌟
 */
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
+
+const PLAYER_STORAGE_KEY = 'MUSIC_PLAYER';
 
 const playList = $('.playlist');
 const cdElement = $('.cd');
@@ -34,6 +36,7 @@ const app = {
     isRandom: false,
     isRepeat: false,
     arrayPlayed: [false, false, false, false, false, false, false, false],
+    config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
     songs: [
         {
             name: 'Cưới thôi',
@@ -84,6 +87,10 @@ const app = {
             image: './assets/img/song8.jpg'
         }
     ],
+    setConfig: function(key, value) {
+        this.config[key] = value;
+        localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
+    },
     defineProperties: function () {
         Object.defineProperty(this, 'currentSong', {
             get: function () {
@@ -199,6 +206,7 @@ const app = {
         // Xử lý khi random bài hát
         randomBtn.onclick = function () {
             _this.isRandom = !_this.isRandom;
+            _this.setConfig('isRandom', _this.isRandom);
             // Nếu _this.isRandom = true thì sẽ thêm class="active" và ngược lại
             this.classList.toggle('active', _this.isRandom);
         }
@@ -206,6 +214,7 @@ const app = {
         // Xử lý lập lại 1 bài hát
         repeatBtn.onclick = function () {
             _this.isRepeat = !_this.isRepeat;
+            _this.setConfig('isRepeat', _this.isRepeat);
             // Nếu _this.isRepeat = true thì sẽ thêm class="active" và ngược lại
             this.classList.toggle('active', _this.isRepeat);
         }
@@ -246,6 +255,13 @@ const app = {
         header.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url("${this.currentSong.image}")`;
         audio.src = this.currentSong.path;
+    },
+    loadConfig: function () {
+        this.isRandom = this.config.isRandom;
+        this.isRepeat = this.config.isRepeat;
+        // Hiển thị trạng thái ban đầu của ứng dụng
+        randomBtn.classList.toggle('active', this.isRandom);
+        repeatBtn.classList.toggle('active', this.isRepeat);
     },
     netxSong: function () {
         this.currentIndex++;
@@ -295,6 +311,8 @@ const app = {
         }, 200);
     },
     start: function () {
+        // Gán cấu hình từ config vào ứng dụng
+        this.loadConfig();
         // Định nghĩa các thuộc tính cho object
         this.defineProperties();
         // Lắng nghe / xử lý các sự kiện (DOM event handler)
